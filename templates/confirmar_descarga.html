@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Destino da Descarga</title>
+    <style>
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            max-width: 520px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.1);
+        }
+
+        .card p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        .destino {
+            margin-top: 12px;
+            padding: 12px;
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #166534;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #15803d;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Destino da Descarga</h1>
+
+<div class="card">
+    <p><strong>Cliente:</strong> {{ cliente }}</p>
+    <p><strong>Fazenda:</strong> {{ fazenda }}</p>
+    <p><strong>Motorista:</strong> {{ motorista }}</p>
+    <p><strong>Peso:</strong> {{ peso }} kg</p>
+    <p><strong>Sacas:</strong> {{ sacas }}</p>
+
+    <div class="destino">
+        Rolo Destino: Rolo {{ rolo.id }}
+    </div>
+
+    <form method="post" action="/secador/confirmar/{{ rolo.id }}">
+        <input type="hidden" name="cliente" value="{{ cliente }}">
+        <input type="hidden" name="fazenda" value="{{ fazenda }}">
+        <input type="hidden" name="motorista" value="{{ motorista }}">
+        <input type="hidden" name="peso" value="{{ peso }}">
+        <input type="hidden" name="sacas" value="{{ sacas }}">
+
+        <button type="submit">
+            ✅ Confirmar Descarga
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Finalizar Secagem</title>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f0f4f8;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px 30px 40px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 45px rgba(0,0,0,0.08);
+    }
+    h2 {
+        color: #22c55e;
+        font-weight: 700;
+        font-size: 24px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    p {
+        font-weight: 600;
+        margin: 8px 0 4px;
+        color: #1e293b;
+    }
+    span {
+        font-weight: 400;
+        color: #334155;
+    }
+    label {
+        font-weight: 600;
+        font-size: 14px;
+        margin-top: 18px;
+        display: block;
+        color: #1e293b;
+    }
+    input {
+        width: 100%;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid #cbd5e1;
+        margin-top: 6px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+    button {
+        margin-top: 30px;
+        width: 100%;
+        padding: 16px;
+        border-radius: 16px;
+        border: none;
+        background: #22c55e;
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+    button svg {
+        stroke: white;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>✔ Secagem Finalizada</h2>
+
+    <p><strong>Cliente:</strong> <span>{{ r.cliente or "Não informado" }}</span></p>
+    <p><strong>Peso bruto:</strong> <span>{{ r.peso_bruto or "0" }} kg</span></p>
+    <p><strong>Sacas:</strong> <span>{{ r.sacas or ((r.peso_bruto // 100) if r.peso_bruto else 0) }}</span></p>
+    <p><strong>Rolo utilizado:</strong> <span>Rolo {{ r.id }}</span></p>
+    <p><strong>Iniciado por:</strong> <span>{{ r.iniciado_por or "Desconhecido" }}</span></p>
+    <p><strong>Finalizado por:</strong> <span>{{ finalizado_por }}</span></p>
+    <p><strong>Data e hora:</strong> <span>{{ data_hora }}</span></p>
+
+    <form method="post" action="/secador/registrar-grau/{{ r.id }}">
+
+        <input type="hidden" name="rolo_id" value="{{ r.id }}">
+        
+        <label for="grau">Grau do café</label>
+        <input id="grau" type="number" step="0.1" name="grau" placeholder="Ex: 78.5" required>
+        
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" name="senha" required>
+        
+        <button type="submit" aria-label="Registrar Grau e Voltar ao Painel">
+            💾 Registrar Grau e Voltar ao Painel
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Chegada do Café</title>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+:root {
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --primary:#4caf50;
+    --primary-soft:#e8f5e9;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --border:#e5e7eb;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:'Inter','Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:240px;
+    height:100vh;
+    position:fixed;
+    background:linear-gradient(180deg,#fff,#f8fafc);
+    border-right:1px solid var(--border);
+    padding:20px;
+    transition:.3s;
+}
+.sidebar.collapsed{width:78px;}
+
+.sidebar img{
+    max-width:140px;
+    margin:0 auto 12px;
+    display:block;
+}
+
+.user-box{
+    background:var(--primary-soft);
+    padding:10px;
+    border-radius:12px;
+    text-align:center;
+    margin-bottom:20px;
+    font-size:13px;
+}
+
+.toggle{
+    position:absolute;
+    top:18px;
+    right:-14px;
+    width:28px;
+    height:28px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:50%;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+nav a{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px;
+    margin:6px 0;
+    border-radius:10px;
+    color:#374151;
+    text-decoration:none;
+}
+nav a:hover{
+    background:var(--primary-soft);
+    color:var(--primary);
+}
+
+/* ===== CONTENT ===== */
+.content{
+    margin-left:240px;
+    padding:40px;
+}
+
+.card{
+    background:var(--card);
+    padding:34px;
+    border-radius:18px;
+    max-width:900px;
+    box-shadow:0 20px 40px rgba(0,0,0,.08);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+}
+.field span{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:6px;
+}
+.field input{
+    padding:14px;
+    border-radius:12px;
+    border:1px solid var(--border);
+}
+
+button{
+    margin-top:32px;
+    padding:16px;
+    width:260px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#4caf50,#43a047);
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+}
+button:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
+}
+
+/* ===== ALERTAS ===== */
+#alertaCliente,#alertaFila,#boasVindas{
+    display:none;
+    padding:16px;
+    border-radius:12px;
+    margin-bottom:20px;
+    font-weight:600;
+}
+#alertaCliente{background:#fee2e2;color:#991b1b;}
+#alertaFila{background:#fef3c7;color:#92400e;}
+#boasVindas{background:#e9f7ec;color:#166534;animation:slideDown .4s ease;}
+
+@keyframes slideDown{
+    from{opacity:0;transform:translateY(-10px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+/* ===== LOGOUT MODERNO ===== */
+#logoutOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.85);
+    backdrop-filter:blur(6px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+    color:white;
+}
+
+.logout-box{
+    background:#111827;
+    padding:40px;
+    border-radius:22px;
+    width:320px;
+    text-align:center;
+    box-shadow:0 30px 60px rgba(0,0,0,.6);
+}
+
+.progress-container{
+    height:8px;
+    background:#1f2937;
+    border-radius:999px;
+    overflow:hidden;
+    margin:20px 0;
+}
+
+#progressBar{
+    height:100%;
+    width:0%;
+    background:#4caf50;
+    transition:width .2s;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="toggle" onclick="toggleSidebar()">❮</div>
+
+    <img src="/static/img/rdconilon.png">
+
+    <div class="user-box">
+        👤 <strong>{{ request.cookies.get("usuario") }}</strong><br>
+        <span style="font-size:12px;color:#64748b;">sessão ativa</span>
+    </div>
+
+    <nav>
+        <a href="/dashboard"><i data-lucide="home"></i><span>Início</span></a>
+        <a href="/clientes"><i data-lucide="users"></i><span>Clientes</span></a>
+        <a href="/vendas"><i data-lucide="shopping-cart"></i><span>Vendas</span></a>
+        <a href="/relatorios"><i data-lucide="bar-chart-3"></i><span>Relatórios</span></a>
+        <a href="/secador"><i data-lucide="hexagon"></i><span>Secador</span></a>
+        <a href="/almox"><i data-lucide="package"></i><span>Almoxx360</span></a>
+        <a href="#" id="btnLogout"><i data-lucide="power"></i><span>Sair</span></a>
+    </nav>
+</div>
+
+<div class="content">
+<div class="card">
+
+    <div id="boasVindas">
+        👋 Bem-vindo, <span id="nomeUsuario"></span>
+    </div>
+
+    <h2>Chegada do Café</h2>
+    <p>Registro de entrada do café no sistema</p>
+
+    <div id="alertaFila">
+        ⚠️ No momento, não há rolos disponíveis para essa capacidade.
+    </div>
+
+    <div id="alertaCliente">
+        ⚠️ Cliente não cadastrado.
+    </div>
+
+    <form id="formChegada" method="post" action="/calcular-destino">
+        <div class="grid">
+            <div class="field"><span>Cliente</span><input id="cliente_input" name="cliente" required></div>
+            <div class="field"><span>Fazenda</span><input name="fazenda" required></div>
+            <div class="field"><span>Motorista</span><input name="motorista" required></div>
+            <div class="field"><span>Peso bruto (kg)</span><input type="number" name="peso" required></div>
+            <div class="field"><span>Data</span><input type="date" id="data" readonly></div>
+            <div class="field"><span>Hora</span><input type="time" id="hora" readonly></div>
+        </div>
+
+        <button id="btnSubmit" type="submit" disabled>Registrar Chegada</button>
+    </form>
+
+</div>
+</div>
+
+<!-- OVERLAY LOGOUT -->
+<div id="logoutOverlay">
+    <div class="logout-box">
+        <div id="logoutMensagem" style="font-size:20px;font-weight:600;">
+            💾 Salvando dados da sessão...
+        </div>
+
+        <div class="progress-container">
+            <div id="progressBar"></div>
+        </div>
+
+        <div style="font-size:14px;color:#9ca3af;">
+            Aguarde um instante 👊
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+
+/* BOAS-VINDAS */
+document.addEventListener("DOMContentLoaded",()=>{
+    const usuario="{{ request.cookies.get('usuario','') }}";
+    if(usuario && !sessionStorage.getItem("boasVindasMostrada")){
+        document.getElementById("nomeUsuario").innerText=usuario.toUpperCase();
+        document.getElementById("boasVindas").style.display="block";
+        sessionStorage.setItem("boasVindasMostrada","true");
+        setTimeout(()=>boasVindas.style.display="none",4000);
+    }
+});
+
+/* DATA / HORA */
+const agora=new Date();
+data.value=agora.toISOString().split("T")[0];
+hora.value=agora.toTimeString().slice(0,5);
+
+/* LOGOUT MODERNO */
+document.getElementById("btnLogout")?.addEventListener("click",function(e){
+    e.preventDefault();
+
+    const overlay=document.getElementById("logoutOverlay");
+    const mensagem=document.getElementById("logoutMensagem");
+    const progressBar=document.getElementById("progressBar");
+
+    overlay.style.display="flex";
+    let progresso=0;
+
+    const intervalo=setInterval(()=>{
+        progresso+=5;
+        progressBar.style.width=progresso+"%";
+
+        if(progresso>=100){
+            clearInterval(intervalo);
+
+            setTimeout(()=>{
+                mensagem.innerHTML=
+                "✅ Obrigado pelo seu dia de trabalho, <strong>{{ request.cookies.get('usuario') }}</strong>.";
+            },400);
+
+            setTimeout(()=>{
+                window.location.href="/logout";
+            },2200);
+        }
+    },80);
+});
+
+lucide.createIcons();
+</script>
+
+</body>
+</html>

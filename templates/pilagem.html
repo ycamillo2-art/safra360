@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Pilagem - Safra360°</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg,#e0f2fe,#f4f6f8);
+    margin: 0;
+    padding: 30px;
+}
+
+/* ===== HEADER MODERNO ===== */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    padding:18px 28px;
+    border-radius:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.08);
+    margin-bottom:30px;
+}
+
+.header h1{
+    margin:0;
+    font-size:22px;
+    color:#16a34a;
+}
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.user-box{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,0.6);
+    padding:8px 14px;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:600;
+    color:#1f2937;
+}
+
+.btn-logout{
+    padding:10px 18px;
+    border-radius:14px;
+    font-weight:600;
+    color:white;
+    background:#ef4444;
+    text-decoration:none;
+    transition:.3s;
+}
+.btn-logout:hover{
+    background:#dc2626;
+}
+
+/* ===== TOTAL PESO ===== */
+.total-peso {
+    text-align: center;
+    font-weight: 600;
+    color: #16a34a;
+    margin-bottom: 30px;
+    font-size: 18px;
+}
+
+/* ===== GRID ===== */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* ===== ANIMAÇÃO ===== */
+@keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to { opacity:1; transform:translateY(0); }
+}
+
+/* ===== CARD ===== */
+.card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    padding: 24px;
+    border-radius: 22px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.06);
+    transition: transform .3s, box-shadow .3s;
+    border:1px solid rgba(255,255,255,.4);
+    animation: fadeUp .6s ease forwards;
+    opacity:0;
+}
+
+/* Delay progressivo */
+.card:nth-child(1){ animation-delay:.1s }
+.card:nth-child(2){ animation-delay:.2s }
+.card:nth-child(3){ animation-delay:.3s }
+.card:nth-child(4){ animation-delay:.4s }
+.card:nth-child(5){ animation-delay:.5s }
+.card:nth-child(6){ animation-delay:.6s }
+.card:nth-child(7){ animation-delay:.7s }
+.card:nth-child(8){ animation-delay:.8s }
+
+.card:hover{
+    transform: translateY(-8px) scale(1.01);
+    box-shadow:0 25px 60px rgba(0,0,0,.12);
+}
+
+/* Barra lateral por status */
+.card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:6px;
+    border-radius:22px 0 0 22px;
+}
+
+.card:has(.status.AGUARDANDO)::before{
+    background:#38bdf8;
+}
+
+.card:has(.status.EM_PILAGEM)::before{
+    background:#f59e0b;
+}
+
+/* TEXTOS */
+.card p {
+    font-size: 14px;
+    margin: 6px 0;
+    color: #374151;
+}
+.card strong {
+    color: #1f2937;
+}
+
+/* STATUS */
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-top: 6px;
+}
+
+.status.AGUARDANDO {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.status.EM_PILAGEM {
+    background: #fef3c7;
+    color: #78350f;
+    box-shadow:0 0 10px rgba(245,158,11,.4);
+}
+
+/* BOTÕES */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 14px;
+    border: none;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: .3s;
+}
+
+.btn-green { background: #22c55e; color: white; }
+.btn-green:hover { background: #16a34a; }
+
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+}
+
+/* ===== LOGOUT OVERLAY ===== */
+#logoutOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.85);
+    backdrop-filter:blur(6px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:9999;
+    color:white;
+}
+.logout-box{
+    background:#111827;
+    padding:40px 60px;
+    border-radius:20px;
+    text-align:center;
+    width:420px;
+}
+.progress-container{
+    width:100%;
+    height:8px;
+    background:#1f2937;
+    border-radius:20px;
+    margin-top:25px;
+    overflow:hidden;
+}
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#4caf50,#22c55e);
+    border-radius:20px;
+    transition:width .3s ease;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Painel de Pilagem</h1>
+
+    <div class="header-right">
+        <div class="user-box">
+            👤 {{ request.cookies.get('usuario') }}
+        </div>
+
+        <a href="#" id="btnLogout" class="btn-logout">
+            Sair
+        </a>
+    </div>
+</div>
+
+<p class="total-peso">
+    Total de Peso: <strong>{{ total_peso }} kg</strong>
+</p>
+
+{% if cargas %}
+<div class="cards-grid">
+
+{% for c in cargas %}
+<div class="card">
+
+    <p><strong>Cliente:</strong> {{ c.cliente }}</p>
+    <p><strong>Fazenda:</strong> {{ c.fazenda }}</p>
+    <p><strong>Motorista:</strong> {{ c.motorista }}</p>
+    <p><strong>Peso:</strong> {{ c.peso }} kg</p>
+    <p><strong>Sacas:</strong> {{ c.sacas }}</p>
+    <p><strong>Rolo:</strong> Rolo {{ c.rolo_id }}</p>
+
+    <p>
+        <strong>Status Pilagem:</strong>
+        <span class="status {{ c.status_pilagem|replace(' ', '_') }}">
+            {{ c.status_pilagem }}
+        </span>
+    </p>
+
+    <p><strong>Grau:</strong> {{ c.grau or "—" }}</p>
+
+    {% if c.status_pilagem == "AGUARDANDO" %}
+        <form action="/pilagem/iniciar" method="post">
+            <input type="hidden" name="rolo_id" value="{{ c.rolo_id | int }}">
+            <input type="password" name="senha" placeholder="Digite sua senha" required>
+            <button class="btn btn-green" type="submit">
+                ▶ Iniciar Pilagem
+            </button>
+        </form>
+    {% elif c.status_pilagem == "EM PILAGEM" %}
+        <a href="/pilagem/continuar/{{ c.rolo_id }}" class="btn btn-green">
+            ▶ Continuar Pilagem
+        </a>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+</div>
+{% else %}
+<p style="text-align:center; color:#6b7280;">
+    Nenhuma carga registrada na pilagem.
+</p>
+{% endif %}
+
+<!-- Overlay Logout -->
+<div id="logoutOverlay">
+  <div class="logout-box">
+    <div id="logoutMensagem" style="font-size:20px;font-weight:600;">
+      💾 Salvando registros...
+    </div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById("btnLogout").addEventListener("click", function(e){
+    e.preventDefault();
+    const overlay = document.getElementById("logoutOverlay");
+    const mensagem = document.getElementById("logoutMensagem");
+    const progressBar = document.getElementById("progressBar");
+
+    overlay.style.display = "flex";
+    let progresso = 0;
+
+    const intervalo = setInterval(()=>{
+        progresso += 5;
+        progressBar.style.width = progresso+"%";
+
+        if(progresso>=100){
+            clearInterval(intervalo);
+            setTimeout(()=>{
+                mensagem.innerHTML =
+                "✅ Obrigado pelo seu dia de trabalho, <strong>{{ request.cookies.get('usuario') }}</strong>.";
+            },400);
+            setTimeout(()=>{
+                window.location.href="/logout";
+            },2200);
+        }
+    },80);
+});
+</script>
+
+</body>
+</html>

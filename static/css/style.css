@@ -1,0 +1,109 @@
+/* =========================
+   GLOBAL
+========================= */
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f6f8;
+    padding: 30px;
+}
+
+h1 { 
+    margin-bottom: 5px; 
+}
+
+.subtitle { 
+    color: #666; 
+    margin-bottom: 25px; 
+}
+
+/* =========================
+   GRID
+========================= */
+.grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px; 
+    max-width: 1100px; 
+    margin: auto; 
+}
+
+/* =========================
+   CARD
+========================= */
+.card { 
+    background: #fff; 
+    border-radius: 16px; 
+    padding: 20px; 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05); 
+}
+
+.field { 
+    margin-bottom: 12px; 
+}
+
+.field label { 
+    font-size: 13px; 
+    color: #888; 
+    display: block; 
+    margin-bottom: 4px; 
+}
+
+.field input { 
+    width: 100%; 
+    padding: 12px; 
+    border-radius: 10px; 
+    border: 1px solid #ddd; 
+    background: #f0f3f6; 
+    font-weight: 600; 
+}
+
+.field input.edit { 
+    background: #fff; 
+}
+
+/* =========================
+   BOTÕES
+========================= */
+.btn { 
+    background: #22c55e; 
+    border: none; 
+    padding: 14px; 
+    border-radius: 12px; 
+    color: #fff; 
+    font-size: 16px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    width: 100%; 
+    margin-top: 15px; 
+}
+
+.btn:hover { 
+    background: #16a34a; 
+}
+
+.btn-red {
+    background: #ef4444;
+}
+
+.btn-red:hover {
+    background: #dc2626;
+}
+
+/* =========================
+   LISTA / ALERTA / TOTAL
+========================= */
+.list { 
+    margin-top: 10px; 
+    font-size: 14px; 
+}
+
+.alert { 
+    margin-top: 10px; 
+    color: #b45309; 
+    font-weight: 600; 
+}
+
+.total { 
+    margin-top: 15px; 
+    font-weight: bold; 
+}

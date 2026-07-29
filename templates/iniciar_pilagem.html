@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Pilagem</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f6f8;
+            padding: 30px;
+        }
+        h1 { margin-bottom: 5px; }
+        .subtitle { color: #666; margin-bottom: 25px; }
+        .header-top {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            max-width:1100px;
+            margin:auto 0 30px 0;
+        }
+        .header-top span { font-weight:600; color:#111827; }
+        .header-top a { text-decoration:none; color:#ef4444; font-weight:600; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: auto; }
+        .card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .field { margin-bottom: 12px; }
+        .field label { font-size: 13px; color: #888; display: block; margin-bottom: 4px; }
+        .field input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #f0f3f6; font-weight: 600; }
+        .field input.edit { background: #fff; }
+        .btn { background: #22c55e; border: none; padding: 14px; border-radius: 12px; color: #fff; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; text-align:center; text-decoration:none; display:inline-block; }
+        .btn:hover { background: #16a34a; }
+        .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+        .btn-red { background: #ef4444; color:#fff; }
+        .btn-red:hover { background: #dc2626; }
+
+        .list { margin-top: 10px; font-size: 14px; }
+        .alert { margin-top: 12px; font-weight: 600; }
+        .alert.sucesso { color: #16a34a; }
+        .alert.erro { color: #dc2626; }
+        .alert.aviso { color: #b45309; }
+        .total { margin-top: 15px; font-weight: bold; }
+        hr { border: 0; border-top: 1px solid #ddd; }
+
+        /* OVERLAY FINALIZAÇÃO PILAGEM */
+        #resumoOverlay {
+            position:fixed;
+            inset:0;
+            background:rgba(2,6,23,.85);
+            backdrop-filter:blur(6px);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+            color:white;
+        }
+        #resumoOverlay .resumo-box {
+            background:#111827;
+            padding:40px;
+            border-radius:20px;
+            width:480px;
+            text-align:center;
+        }
+        #resumoOverlay h2 { margin-top:0; }
+        #resumoConteudo { margin-top:25px; font-size:15px; line-height:1.6; display:none; text-align:left; }
+    </style>
+</head>
+<body>
+
+<div class="header-top">
+    <span>Usuário: <strong>{{ request.cookies.get('usuario') }}</strong></span>
+    <a href="/logout">Sair ⏏️</a>
+</div>
+
+<h1>Início da Pilagem</h1>
+<p class="subtitle">Registro e acompanhamento da pilagem</p>
+
+<div class="grid">
+
+    <!-- 📦 DADOS -->
+    <div class="card">
+        <h3>Dados da Carga</h3>
+
+        <div class="field"><label>Cliente</label><input value="{{ cliente }}" disabled></div>
+        <div class="field"><label>Fazenda</label><input value="{{ fazenda }}" disabled></div>
+        <div class="field"><label>Motorista</label><input value="{{ motorista }}" disabled></div>
+        <div class="field"><label>Peso Bruto (kg)</label><input value="{{ peso }}" disabled></div>
+        <div class="field"><label>Sacas Estimadas</label><input value="{{ sacas }}" disabled></div>
+        <div class="field"><label>Rolo</label><input value="{{ rolo_nome }} (ID {{ rolo_id }})" disabled></div>
+        <div class="field"><label>Grau do Café</label><input value="{{ grau }}" disabled></div>
+
+        <hr>
+
+        <div class="field"><label>Pilagem Iniciada Por</label><input value="{{ pilagem_iniciada_por or '—' }}" disabled></div>
+        <div class="field"><label>Pilagem em Execução Por</label><input value="{{ pilagem_em_execucao_por or '—' }}" disabled></div>
+
+        <div class="field"><label>Sacas Piladas</label><input id="sacas_piladas" value="{{ sacas_piladas | float }}" disabled></div>
+        <div class="field"><label>Peso Pilado (kg)</label><input id="peso_pilado" value="{{ peso_pilado | float }}" disabled></div>
+
+        <a href="/finalizar-turno" class="btn btn-red">⏹️ Finalizar Turno</a>
+    </div>
+
+    <!-- ⚙️ RENDIMENTO -->
+    <div class="card">
+        <h3>Rendimento da Pilagem</h3>
+
+        <div class="field">
+            <label>Peso do Bag (kg)</label>
+            <input id="peso" class="edit" type="number" min="1" placeholder="Ex: 1200">
+        </div>
+
+        <button id="btnAdicionar" type="button" class="btn" onclick="adicionar()">Adicionar Rendimento</button>
+
+        <div class="list" id="lista"></div>
+
+        <div class="total">
+            Total Sacas: <span id="totalSacas">{{ sacas_piladas | float }}</span><br>
+            Total Peso: <span id="totalPeso">{{ peso_pilado | float }}</span> kg<br>
+            Registros: <span id="totalRegistros">{{ registros }}</span>
+        </div>
+
+        <div class="alert" id="alerta"></div>
+
+        <form id="finalizarForm" action="/pilagem/finalizar" method="post" onsubmit="return validarFinalizacao()">
+            <input type="hidden" name="rolo_id" value="{{ rolo_id }}">
+            <input type="hidden" name="total_peso" id="inputTotalPeso">
+            <input type="hidden" name="total_sacas" id="inputTotalSacas">
+
+            <div class="field">
+                <label>Senha do Pilador</label>
+                <input type="password" name="senha" class="edit" required>
+            </div>
+
+            <button class="btn" style="margin-top:25px;">Finalizar Pilagem</button>
+        </form>
+    </div>
+
+</div>
+
+<!-- OVERLAY FINALIZAÇÃO PILAGEM -->
+<div id="resumoOverlay">
+    <div class="resumo-box">
+        <h2>⏳ Salvando dados da pilagem...</h2>
+        <div id="resumoConteudo"></div>
+    </div>
+</div>
+
+<script>
+    let totalSacas = parseFloat(document.getElementById('totalSacas').textContent) || 0;
+    let totalPeso = parseFloat(document.getElementById('totalPeso').textContent) || 0;
+    let registros = parseInt(document.getElementById('totalRegistros').textContent) || 0;
+
+    const lista = document.getElementById('lista');
+    const alerta = document.getElementById('alerta');
+    const btnAdicionar = document.getElementById('btnAdicionar');
+
+    function mostrarMensagem(msg, tipo = 'sucesso', tempo = 3500) {
+        alerta.className = `alert ${tipo}`;
+        alerta.innerText = msg;
+        if (tempo > 0) {
+            setTimeout(() => alerta.innerText = '', tempo);
+        }
+    }
+
+    if (registros > 0 && totalPeso > 0) {
+        const pesoBag = totalPeso / registros;
+        const sacasBag = totalSacas / registros;
+
+        for (let i = 1; i <= registros; i++) {
+            lista.innerHTML += `• Bag ${i} → ${pesoBag.toFixed(2)} kg (${sacasBag.toFixed(2)} sacas)<br>`;
+        }
+    }
+
+    function adicionar() {
+        const pesoInput = document.getElementById('peso');
+        const peso = parseFloat(pesoInput.value);
+
+        if (!peso || peso <= 0) {
+            mostrarMensagem("❌ Informe um peso válido.", "erro");
+            return;
+        }
+
+        btnAdicionar.disabled = true;
+        mostrarMensagem("⏳ Salvando bag...", "aviso", 0);
+
+        const sacas = peso / 60;
+
+        registros++;
+        totalPeso += peso;
+        totalSacas += sacas;
+
+        lista.innerHTML += `• Bag ${registros} → ${peso.toFixed(2)} kg (${sacas.toFixed(2)} sacas)<br>`;
+
+        document.getElementById('totalPeso').textContent = totalPeso.toFixed(2);
+        document.getElementById('totalSacas').textContent = totalSacas.toFixed(2);
+        document.getElementById('totalRegistros').textContent = registros;
+
+        document.getElementById('sacas_piladas').value = totalSacas.toFixed(2);
+        document.getElementById('peso_pilado').value = totalPeso.toFixed(2);
+
+        fetch("/pilagem/atualizar_progresso", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                rolo_id: {{ rolo_id | safe }},
+                sacas_piladas: totalSacas,
+                peso_pilado: totalPeso
+            })
+        }).then(() => {
+            mostrarMensagem("✅ Bag registrado com sucesso!", "sucesso");
+        }).catch(() => {
+            mostrarMensagem("❌ Erro ao salvar bag.", "erro");
+        }).finally(() => {
+            btnAdicionar.disabled = false;
+            pesoInput.value = '';
+            pesoInput.focus();
+        });
+    }
+
+    function validarFinalizacao() {
+
+        if (registros < 3) {
+            mostrarMensagem("⚠️ Mínimo de 3 registros não atingido.", "aviso");
+            return false;
+        }
+
+        document.getElementById('inputTotalPeso').value = totalPeso.toFixed(2);
+        document.getElementById('inputTotalSacas').value = totalSacas.toFixed(2);
+
+        const overlay = document.getElementById("resumoOverlay");
+        const conteudo = document.getElementById("resumoConteudo");
+
+        overlay.style.display = "flex";
+
+        const pesoBruto = "{{ peso }}";
+        const iniciadoPor = "{{ pilagem_iniciada_por or '—' }}";
+        const usuarioLogado = "{{ request.cookies.get('usuario') }}";
+
+        setTimeout(() => {
+            conteudo.style.display = "block";
+            conteudo.innerHTML = `
+                <strong>📦 Resumo da Carga</strong><br><br>
+
+                Peso Bruto: <strong>${pesoBruto} kg</strong><br>
+                Peso Pós Pilagem: <strong>${totalPeso.toFixed(2)} kg</strong><br><br>
+
+                Iniciado por: <strong>${iniciadoPor}</strong><br>
+                Finalizado por: <strong>${usuarioLogado}</strong>
+            `;
+        }, 1800);
+
+        setTimeout(() => {
+            document.getElementById('finalizarForm').submit();
+        }, 4500);
+
+        return false;
+    }
+</script>
+
+</body>
+</html>

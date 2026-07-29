@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Safra360° – Painel do Secador</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/feather-icons"></script>
+
+<style>
+:root{
+    --bg:#f0f4f8;
+    --card:#ffffff;
+    --primary:#22c55e;
+    --warning:#facc15;
+    --danger:#ef4444;
+    --info:#6366f1;
+    --text:#1e293b;
+    --muted:#64748b;
+    --border:#cbd5e1;
+    --shadow:rgba(0,0,0,.08);
+}
+
+*{box-sizing:border-box;font-family:Inter,sans-serif;}
+body{margin:0;background:var(--bg);padding:24px;color:var(--text);}
+header{text-align:center;margin-bottom:20px;}
+header h2{color:var(--primary);display:flex;justify-content:center;align-items:center;gap:8px;}
+
+.controls{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:20px;}
+.controls input{padding:12px 16px;border-radius:14px;border:1px solid var(--border);min-width:260px;}
+.controls a{padding:14px 22px;border-radius:18px;background:var(--primary);color:#fff;text-decoration:none;font-weight:700;box-shadow:0 10px 25px var(--shadow);}
+
+.status-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:30px;}
+.status{background:#fff;border-radius:16px;padding:14px;box-shadow:0 10px 25px var(--shadow);font-size:14px;}
+.status strong{font-size:22px;display:block;}
+.livre strong{color:var(--primary);}
+.aguardando strong{color:var(--warning);}
+.secando strong{color:var(--danger);}
+.finalizado strong{color:var(--info);}
+.manutencao strong{color:#6b7280;}
+
+.container{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;}
+.card{background:var(--card);border-radius:22px;box-shadow:0 20px 45px var(--shadow);padding:16px;border-left:6px solid transparent;transition:.3s;}
+.livre{border-color:var(--primary);background:#f0fdf4;}
+.aguardando{border-color:var(--warning);background:#fefce8;}
+.secando{border-color:var(--danger);background:#fee2e2;}
+.finalizado{border-color:var(--info);background:#eef2ff;}
+.manutencao{border-color:#6b7280;background:#f1f5f9;}
+
+.card-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.card-body{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+.card.open .card-body{max-height:1400px;margin-top:14px;}
+
+.logout-area{margin-top:40px;display:flex;justify-content:center;}
+.btn-logout{padding:14px 40px;border:none;border-radius:18px;background:var(--danger);color:white;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 10px 25px rgba(239,68,68,.25);transition:.2s;}
+.btn-logout:hover{transform:translateY(-2px);background:#dc2626;}
+
+#logoutOverlay{position:fixed;inset:0;background:rgba(2,6,23,.85);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9999;color:white;}
+.logout-box{background:#111827;padding:40px 60px;border-radius:20px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.5);}
+.loader{width:28px;height:28px;border:3px solid #374151;border-top:3px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:25px auto 0;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+/* ===== CAMPOS MODERNOS ===== */
+
+.card-body p{
+    margin:6px 0;
+    font-size:14px;
+}
+
+.card-body form{
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.card-body input,
+.card-body select{
+    width:100%;
+    padding:12px 14px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    font-size:14px;
+    outline:none;
+    transition:.2s;
+    background:#fff;
+}
+
+.card-body input:focus,
+.card-body select:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(34,197,94,.15);
+}
+
+.card-body select{
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    background-size:16px;
+}
+
+.card-body button,
+.card-body a{
+    display:block;
+    width:100%;
+    font-size:14px;
+    font-weight:600;
+    padding:12px 14px;
+    border-radius:16px;
+    cursor:pointer;
+    transition:.2s;
+    text-align:center;
+    text-decoration:none;
+}
+
+.card-body button:hover,
+.card-body a:hover{
+    transform:translateY(-1px);
+    filter:brightness(.95);
+}
+
+/* ===== CORREÇÃO DEFINITIVA DO PROBLEMA ===== */
+
+.card-body form + a{
+    margin-top:16px;
+}
+
+.card-body a[href*="/secador/finalizar"]{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px dashed var(--border);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2><i data-feather="wind"></i> Painel do Secador</h2>
+</header>
+
+<div class="controls">
+    <input id="busca" placeholder="Buscar cliente ou rolo...">
+    <a href="/dashboard">➕ Registrar nova chegada</a>
+</div>
+
+<div class="status-bar">
+    <div class="status livre">Livre<strong id="cLivre">0</strong></div>
+    <div class="status aguardando">Aguardando<strong id="cAguardando">0</strong></div>
+    <div class="status secando">Secando<strong id="cSecando">0</strong></div>
+    <div class="status finalizado">Finalizado<strong id="cFinalizado">0</strong></div>
+    <div class="status manutencao">Manutenção<strong id="cManutencao">0</strong></div>
+</div>
+
+<div class="container" id="cards">
+{% for r in rolos %}
+<div class="card {{ r.status|lower }}" data-search="{{ (r.cliente or '') }} {{ r.id }} {{ r.status }}">
+    <div class="card-header" onclick="toggleCard(this)">
+        <div>
+            <strong>{{ r.cliente or "—" }}</strong><br>
+            Rolo {{ r.id }} • {{ r.status }}
+        </div>
+        <i data-feather="chevron-down"></i>
+    </div>
+
+    <div class="card-body">
+        {% if r.status == "MANUTENCAO" %}
+            <input type="password" id="senha-{{ r.id }}" placeholder="Senha">
+            <button onclick="finalizarManutencao('{{ r.id }}')" style="background:#22c55e;color:#fff;">
+                Finalizar Manutenção
+            </button>
+
+        {% elif r.status != "LIVRE" %}
+            <p><strong>Peso:</strong> {{ r.peso_bruto or 0 }} kg</p>
+            <p><strong>Sacas:</strong> {{ r.sacas or 0 }}</p>
+            <p><strong>Fazenda:</strong> {{ r.fazenda or "—" }}</p>
+            <p><strong>Motorista:</strong> {{ r.motorista or "—" }}</p>
+
+            {% if r.status in ["AGUARDANDO", "SECANDO"] %}
+            <form method="POST" action="/secador/trocar-rolo">
+                <input type="hidden" name="rolo_atual_id" value="{{ r.id }}">
+                <select name="novo_rolo_id" required>
+                    <option value="">Selecionar novo rolo</option>
+                    {% for novo in rolos %}
+                    {% if novo.status == "LIVRE" and novo.id != r.id and novo.capacidade >= (r.sacas or 0) %}
+                    <option value="{{ novo.id }}">Rolo {{ novo.id }} (Capacidade {{ novo.capacidade }})</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <input type="text" name="motivo" placeholder="Motivo da troca" required>
+                <input type="password" name="senha" placeholder="Senha" required>
+                <button type="submit" style="background:#facc15;color:#000;">Trocar Rolo</button>
+            </form>
+            {% endif %}
+
+            {% if r.status == "SECANDO" %}
+            <a href="/secador/finalizar/{{ r.id }}" style="background:#6366f1;color:#fff;">
+                Finalizar Secagem
+            </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+</div>
+
+<div class="logout-area">
+    <button class="btn-logout" id="btnLogout">Encerrar Turno</button>
+</div>
+
+<div id="logoutOverlay">
+    <div class="logout-box">
+        <div style="font-size:22px;font-weight:600;">💾 Salvando arquivos da sessão...</div>
+        <div style="font-size:14px;color:#9ca3af;margin-top:10px;">Obrigado pelo seu trabalho hoje 👊</div>
+        <div class="loader"></div>
+    </div>
+</div>
+
+<script>
+function toggleCard(el){
+    el.closest(".card").classList.toggle("open");
+}
+
+document.getElementById("busca").addEventListener("input", e => {
+    const v = e.target.value.toLowerCase();
+    document.querySelectorAll(".card").forEach(c => {
+        c.style.display = c.dataset.search.toLowerCase().includes(v) ? "" : "none";
+    });
+});
+
+["livre","aguardando","secando","finalizado","manutencao"].forEach(s => {
+    const el = document.getElementById("c" + s.charAt(0).toUpperCase() + s.slice(1));
+    if(el){ el.innerText = document.querySelectorAll(".card." + s).length; }
+});
+
+document.getElementById("btnLogout").addEventListener("click", ()=>{
+    document.getElementById("logoutOverlay").style.display="flex";
+    setTimeout(()=>window.location.href="/logout",2500);
+});
+
+async function finalizarManutencao(roloId){
+    const senha = document.getElementById(`senha-${roloId}`).value;
+    if(!senha){ alert("Digite a senha."); return; }
+
+    const formData = new FormData();
+    formData.append("rolo_id", roloId);
+    formData.append("senha", senha);
+
+    const res = await fetch("/secador/liberar-rolo",{method:"POST",body:formData});
+    if(res.ok){ location.reload(); }
+    else{ alert("Erro ao liberar rolo"); }
+}
+
+feather.replace();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAFRA360° | Login</title>
+
+<!-- Fonte enterprise -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Manrope',system-ui,-apple-system,BlinkMacSystemFont;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#0f172a,#020617);
+}
+
+/* ===== CONTAINER ===== */
+.container{
+    width:980px;
+    max-width:96%;
+    height:560px;
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    display:flex;
+    box-shadow:0 30px 60px rgba(0,0,0,.45);
+}
+
+/* ===== LADO ESQUERDO ===== */
+.left{
+    width:50%;
+    position:relative;
+    background:url("/static/img/cafe.jpg") center/cover no-repeat;
+}
+
+.left::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        180deg,
+        rgba(2,6,23,.3),
+        rgba(2,6,23,.9)
+    );
+}
+
+.brand{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:60px;
+    color:#fff;
+}
+
+.brand h1{
+    font-size:52px;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.brand h1 span{
+    color:#4caf50;
+}
+
+.brand p{
+    margin-top:18px;
+    font-size:18px;
+    line-height:1.45;
+    max-width:420px;
+    color:#e5e7eb;
+}
+
+/* ===== LADO DIREITO ===== */
+.right{
+    width:50%;
+    padding:60px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.right h2{
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:6px;
+    color:#020617;
+}
+
+.subtitle{
+    font-size:14px;
+    color:#64748b;
+    margin-bottom:28px;
+}
+
+/* ===== ERRO ===== */
+.login-error{
+    background:#fee2e2;
+    color:#991b1b;
+    padding:14px;
+    border-radius:12px;
+    font-size:14px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+/* ===== SUCESSO ===== */
+.login-success{
+    background:#e9f7ec;
+    color:#166534;
+    padding:14px;
+    border-radius:12px;
+    font-size:14px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid #bbf7d0;
+}
+
+/* ===== INPUTS ===== */
+.input-box{
+    margin-bottom:18px;
+}
+
+.input-box label{
+    font-size:13px;
+    font-weight:600;
+    color:#334155;
+}
+
+.input-area{
+    width:100%;
+    padding:14px 14px 14px 44px;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    outline:none;
+    font-size:15px;
+    margin-top:6px;
+    transition:.2s;
+}
+
+.input-area:focus{
+    border-color:#4caf50;
+    box-shadow:0 0 0 3px rgba(76,175,80,.15);
+}
+
+.icon{
+    position:relative;
+}
+
+.icon i{
+    position:absolute;
+    top:52%;
+    left:16px;
+    transform:translateY(-50%);
+    color:#64748b;
+}
+
+/* ===== BOTÕES ===== */
+button{
+    width:100%;
+    padding:15px;
+    background:linear-gradient(135deg,#4caf50,#43a047);
+    color:white;
+    border:none;
+    border-radius:16px;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+
+button:hover{
+    filter:brightness(1.05);
+}
+
+button.loading{
+    pointer-events:none;
+    opacity:.9;
+}
+
+button.loading i{
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+/* ===== BOTÃO NOVO USUÁRIO ===== */
+.novo-usuario{
+    margin-top:14px;
+    padding:14px;
+    border-radius:16px;
+    border:1px solid #e5e7eb;
+    background:#f8fafc;
+    color:#0f172a;
+    font-size:15px;
+    font-weight:600;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    transition:.2s;
+}
+
+.novo-usuario:hover{
+    background:#eef2f7;
+}
+
+/* ===== EXTRA ===== */
+.extra{
+    margin-top:18px;
+    text-align:center;
+    font-size:13px;
+    color:#64748b;
+}
+
+/* ===== RESPONSIVO ===== */
+@media(max-width:900px){
+    .container{
+        flex-direction:column;
+        height:auto;
+    }
+    .left{
+        width:100%;
+        height:220px;
+    }
+    .brand{
+        padding:30px;
+    }
+    .brand h1{
+        font-size:36px;
+    }
+    .brand p{
+        font-size:15px;
+    }
+    .right{
+        width:100%;
+        padding:40px 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- BRAND -->
+    <div class="left">
+        <div class="brand">
+            <h1>SAFRA<span>360°</span></h1>
+            <p>
+                Rastreabilidade total, controle absoluto e confiança
+                em cada etapa da safra.
+            </p>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="right">
+
+        <h2>Acesso ao sistema</h2>
+        <p class="subtitle">Gestão inteligente da produção</p>
+
+        {% if request.query_params.get("usuario") == "ok" %}
+        <div class="login-success">
+            <i class="fa fa-circle-check"></i>
+            Usuário cadastrado com sucesso. Faça o login.
+        </div>
+        {% endif %}
+
+        {% if erro %}
+        <div class="login-error">
+            <i class="fa fa-circle-exclamation"></i>
+            {{ erro }}
+        </div>
+        {% endif %}
+
+        <form method="post" action="/login" onsubmit="entrando(this)">
+
+            <div class="input-box icon">
+                <label>Usuário</label>
+                <i class="fa fa-user"></i>
+                <input class="input-area" name="usuario" required>
+            </div>
+
+            <div class="input-box icon">
+                <label>Senha</label>
+                <i class="fa fa-lock"></i>
+                <input type="password" class="input-area" name="senha" required>
+            </div>
+
+            <button id="btn-login" type="submit">
+                <i class="fa fa-arrow-right"></i>
+                Entrar
+            </button>
+
+        </form>
+
+        <!-- 🔹 NOVO USUÁRIO -->
+        <a href="/usuarios" class="novo-usuario">
+            <i class="fa fa-user-plus"></i>
+            Cadastrar novo usuário
+        </a>
+
+        <div class="extra">
+            SAFRA360° · Sistema de rastreabilidade
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function entrando(form){
+    const btn=document.getElementById("btn-login");
+    btn.classList.add("loading");
+    btn.innerHTML='<i class="fa fa-spinner"></i> Entrando...';
+}
+</script>
+
+</body>
+</html>

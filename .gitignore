@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+data/*.xlsx
+!data/usuarios.xlsx
+.env
