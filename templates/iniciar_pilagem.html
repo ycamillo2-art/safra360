@@ -234,12 +234,46 @@
         document.getElementById('inputTotalPeso').value = totalPeso.toFixed(2);
         document.getElementById('inputTotalSacas').value = totalSacas.toFixed(2);
 
+        // 💾 Salva progresso no navegador (sessionStorage)
+        sessionStorage.setItem("pilagemRoloId", "{{ rolo_id }}");
+        sessionStorage.setItem("pilagemSacas", totalSacas.toFixed(2));
+        sessionStorage.setItem("pilagemPeso", totalPeso.toFixed(2));
+        sessionStorage.setItem("pilagemRegistros", registros);
+        sessionStorage.setItem("pilagemLista", lista.innerHTML);
+
         // Mostra overlay e envia o formulario
         const overlay = document.getElementById("resumoOverlay");
         overlay.style.display = "flex";
         document.getElementById('finalizarForm').submit();
         return false;
     }
+
+    // 🔄 Restaura progresso se voltou por senha errada
+    (function() {
+        {% if erro == "senha" %}
+        const savedRoloId = sessionStorage.getItem("pilagemRoloId");
+        if (savedRoloId === "{{ rolo_id }}") {
+            totalSacas = parseFloat(sessionStorage.getItem("pilagemSacas")) || totalSacas;
+            totalPeso = parseFloat(sessionStorage.getItem("pilagemPeso")) || totalPeso;
+            registros = parseInt(sessionStorage.getItem("pilagemRegistros")) || registros;
+            lista.innerHTML = sessionStorage.getItem("pilagemLista") || lista.innerHTML;
+
+            document.getElementById('totalSacas').textContent = totalSacas.toFixed(2);
+            document.getElementById('totalPeso').textContent = totalPeso.toFixed(2);
+            document.getElementById('totalRegistros').textContent = registros;
+            document.getElementById('sacas_piladas').value = totalSacas.toFixed(2);
+            document.getElementById('peso_pilado').value = totalPeso.toFixed(2);
+            mostrarMensagem("🔄 Progresso restaurado — corrija a senha e tente novamente.", "aviso", 0);
+        }
+        {% else %}
+        // Limpa cache de progresso se a pagina carregou normalmente
+        sessionStorage.removeItem("pilagemRoloId");
+        sessionStorage.removeItem("pilagemSacas");
+        sessionStorage.removeItem("pilagemPeso");
+        sessionStorage.removeItem("pilagemRegistros");
+        sessionStorage.removeItem("pilagemLista");
+        {% endif %}
+    })();
 </script>
 
 </body>
