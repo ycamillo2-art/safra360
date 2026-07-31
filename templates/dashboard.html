@@ -203,12 +203,9 @@ button:disabled{
 
     <nav>
         <a href="/dashboard"><i data-lucide="home"></i><span>Início</span></a>
-        <a href="/clientes"><i data-lucide="users"></i><span>Clientes</span></a>
-        <a href="/vendas"><i data-lucide="shopping-cart"></i><span>Vendas</span></a>
-        <a href="/relatorios"><i data-lucide="bar-chart-3"></i><span>Relatórios</span></a>
         <a href="/secador"><i data-lucide="hexagon"></i><span>Secador</span></a>
-        <a href="/almox"><i data-lucide="package"></i><span>Almoxx360</span></a>
-        <a href="#" id="btnLogout"><i data-lucide="power"></i><span>Sair</span></a>
+        <a href="/pilagem"><i data-lucide="layers"></i><span>Pilagem</span></a>
+        <a href="/finalizar-turno"><i data-lucide="power"></i><span>Sair</span></a>
     </nav>
 </div>
 
@@ -240,7 +237,7 @@ button:disabled{
             <div class="field"><span>Hora</span><input type="time" id="hora" readonly></div>
         </div>
 
-        <button id="btnSubmit" type="submit" disabled>Registrar Chegada</button>
+        <button id="btnSubmit" type="submit">Registrar Chegada</button>
     </form>
 
 </div>
@@ -283,36 +280,6 @@ document.addEventListener("DOMContentLoaded",()=>{
 const agora=new Date();
 data.value=agora.toISOString().split("T")[0];
 hora.value=agora.toTimeString().slice(0,5);
-
-/* LOGOUT MODERNO */
-document.getElementById("btnLogout")?.addEventListener("click",function(e){
-    e.preventDefault();
-
-    const overlay=document.getElementById("logoutOverlay");
-    const mensagem=document.getElementById("logoutMensagem");
-    const progressBar=document.getElementById("progressBar");
-
-    overlay.style.display="flex";
-    let progresso=0;
-
-    const intervalo=setInterval(()=>{
-        progresso+=5;
-        progressBar.style.width=progresso+"%";
-
-        if(progresso>=100){
-            clearInterval(intervalo);
-
-            setTimeout(()=>{
-                mensagem.innerHTML=
-                "✅ Obrigado pelo seu dia de trabalho, <strong>{{ request.cookies.get('usuario') }}</strong>.";
-            },400);
-
-            setTimeout(()=>{
-                window.location.href="/logout";
-            },2200);
-        }
-    },80);
-});
 
 lucide.createIcons();
 </script>
