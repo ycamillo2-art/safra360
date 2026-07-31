@@ -164,7 +164,7 @@ header h2{color:var(--primary);display:flex;justify-content:center;align-items:c
 <div class="card {{ r.status|lower }}" data-search="{{ (r.cliente or '') }} {{ r.id }} {{ r.status }}">
     <div class="card-header" onclick="toggleCard(this)">
         <div>
-            <strong>{{ r.cliente or "—" }}</strong><br>
+            <strong>{{ r.guia or r.cliente or "—" }}</strong><br>
             Rolo {{ r.id }} • {{ r.status }}
         </div>
         <i data-feather="chevron-down"></i>
@@ -178,10 +178,9 @@ header h2{color:var(--primary);display:flex;justify-content:center;align-items:c
             </button>
 
         {% elif r.status != "LIVRE" %}
+            <p><strong>Guia:</strong> {{ r.guia or "—" }}</p>
             <p><strong>Peso:</strong> {{ r.peso_bruto or 0 }} kg</p>
             <p><strong>Sacas:</strong> {{ r.sacas or 0 }}</p>
-            <p><strong>Fazenda:</strong> {{ r.fazenda or "—" }}</p>
-            <p><strong>Motorista:</strong> {{ r.motorista or "—" }}</p>
 
             {% if r.status in ["AGUARDANDO", "SECANDO"] %}
             {% if r.status == "AGUARDANDO" %}

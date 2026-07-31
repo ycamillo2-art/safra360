@@ -227,6 +227,7 @@ def puxar_proxima_da_fila(rolo):
     rolo["cliente"] = proximo["cliente"]
     rolo["fazenda"] = proximo["fazenda"]
     rolo["motorista"] = proximo["motorista"]
+    rolo["guia"] = proximo.get("guia", "")
     rolo["peso_bruto"] = proximo["peso"]
     rolo["sacas"] = proximo["sacas"]
 
@@ -288,9 +289,10 @@ def dashboard(request: Request):
 @app.post("/calcular-destino")
 def calcular_destino(
     request: Request,
-    cliente: str = Form(...),
-    fazenda: str = Form(...),
-    motorista: str = Form(...),
+    cliente: str = Form(""),
+    fazenda: str = Form(""),
+    motorista: str = Form(""),
+    guia: str = Form(""),
     peso: int = Form(...)
 ):
     if not checar_acesso(request):
@@ -306,6 +308,7 @@ def calcular_destino(
             "cliente": cliente,
             "fazenda": fazenda,
             "motorista": motorista,
+            "guia": guia,
             "peso": peso,
             "sacas": sacas
         })
@@ -314,6 +317,7 @@ def calcular_destino(
         "cliente": cliente,
         "fazenda": fazenda,
         "motorista": motorista,
+        "guia": guia,
         "peso": peso,
         "sacas": sacas,
         "data_entrada": datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -345,6 +349,7 @@ def confirmar_descarga(
     cliente: str = Form(...),
     fazenda: str = Form(...),
     motorista: str = Form(...),
+    guia: str = Form(""),
     peso: int = Form(...),
     sacas: int = Form(...)
 ):
@@ -360,6 +365,7 @@ def confirmar_descarga(
     rolo["cliente"] = cliente
     rolo["fazenda"] = fazenda
     rolo["motorista"] = motorista
+    rolo["guia"] = guia
     rolo["peso_bruto"] = peso
     rolo["sacas"] = sacas
 
