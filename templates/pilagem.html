@@ -233,6 +233,12 @@ input[type="password"] {
 
 <body>
 
+{% if erro == "senha" %}
+<div style="background:#fee2e2;color:#991b1b;padding:16px 24px;border-radius:14px;font-weight:600;text-align:center;margin-bottom:20px;border:2px solid #ef4444;">
+    ⚠️ Senha incorreta! Verifique sua senha e tente novamente.
+</div>
+{% endif %}
+
 <div class="header">
     <h1>Painel de Pilagem</h1>
 

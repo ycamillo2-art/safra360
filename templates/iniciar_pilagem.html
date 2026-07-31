@@ -73,6 +73,12 @@
     <a href="/logout">Sair ⏏️</a>
 </div>
 
+{% if erro == "senha" %}
+<div style="background:#fee2e2;color:#991b1b;padding:16px 24px;border-radius:14px;font-weight:600;text-align:center;margin-bottom:20px;border:2px solid #ef4444;">
+    ⚠️ Senha incorreta! Verifique sua senha e tente novamente.
+</div>
+{% endif %}
+
 <h1>Início da Pilagem</h1>
 <p class="subtitle">Registro e acompanhamento da pilagem</p>
 

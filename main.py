@@ -329,11 +329,13 @@ def secador(request: Request):
     nivel = request.cookies.get("nivel")
     if nivel not in ["admin", "secador"]:
         return RedirectResponse("/", status_code=302)
+    erro = request.query_params.get("erro", "")
     return templates.TemplateResponse("secador.html", {
         "request": request,
         "rolos": ROLOS,
         "fila": FILA_ESPERA,
-        "user": {"nivel": nivel}
+        "user": {"nivel": nivel},
+        "erro": erro
     })
 
 @app.post("/secador/confirmar/{rolo_id}")
@@ -374,7 +376,7 @@ def iniciar_secagem(request: Request, rolo_id: int = Form(...), senha: str = For
     df = carregar_usuarios()
     user = df.loc[(df["usuario"] == usuario_logado) & (df["senha"].astype(str) == str(senha))]
     if user.empty:
-        return HTMLResponse("Senha invalida", status_code=403)
+        return RedirectResponse("/secador?erro=senha", status_code=303)
 
     rolo = next((r for r in ROLOS if r["id"] == rolo_id), None)
     if not rolo:
@@ -463,7 +465,7 @@ def trocar_rolo(
 
     df_users = carregar_usuarios()
     if df_users.loc[(df_users["usuario"] == usuario) & (df_users["senha"].astype(str) == str(senha))].empty:
-        return HTMLResponse("Senha invalida", status_code=403)
+        return RedirectResponse("/secador?erro=senha", status_code=303)
 
     rolo_atual = next((r for r in ROLOS if r.get("id") == rolo_atual_id), None)
     novo_rolo = next((r for r in ROLOS if r.get("id") == novo_rolo_id), None)
@@ -513,7 +515,7 @@ def liberar_rolo(request: Request, rolo_id: int = Form(...), senha: str = Form(.
 
     df_users = carregar_usuarios()
     if df_users.loc[(df_users["usuario"] == usuario) & (df_users["senha"].astype(str) == str(senha))].empty:
-        return HTMLResponse("Senha invalida", status_code=403)
+        return RedirectResponse("/secador?erro=senha", status_code=303)
 
     rolo = next((r for r in ROLOS if r.get("id") == rolo_id), None)
     if not rolo:
@@ -555,10 +557,12 @@ def pilagem(request: Request):
 
     total_peso = sum(c["peso"] for c in cargas)
 
+    erro = request.query_params.get("erro", "")
     return templates.TemplateResponse("pilagem.html", {
         "request": request,
         "cargas": cargas,
-        "total_peso": total_peso
+        "total_peso": total_peso,
+        "erro": erro
     })
 
 @app.post("/pilagem/iniciar", response_class=HTMLResponse)
@@ -710,8 +714,11 @@ def continuar_pilagem(request: Request, rolo_id: int):
     carga["pilagem_em_execucao_por"] = usuario
     salvar_pilagem(pilagem_data)
 
+    erro = request.query_params.get("erro", "")
+
     return templates.TemplateResponse("iniciar_pilagem.html", {
         "request": request,
+        "erro": erro,
         "cliente": carga.get("cliente"),
         "fazenda": carga.get("fazenda"),
         "motorista": carga.get("motorista"),
