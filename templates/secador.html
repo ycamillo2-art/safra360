@@ -178,6 +178,16 @@ header h2{color:var(--primary);display:flex;justify-content:center;align-items:c
             <p><strong>Motorista:</strong> {{ r.motorista or "—" }}</p>
 
             {% if r.status in ["AGUARDANDO", "SECANDO"] %}
+            {% if r.status == "AGUARDANDO" %}
+            <form method="POST" action="/secador/iniciar" style="margin-bottom:10px;">
+                <input type="hidden" name="rolo_id" value="{{ r.id }}">
+                <input type="password" name="senha" placeholder="Senha" required>
+                <button type="submit" style="background:#22c55e;color:#fff;">
+                    Iniciar Secagem
+                </button>
+            </form>
+            {% endif %}
+
             <form method="POST" action="/secador/trocar-rolo">
                 <input type="hidden" name="rolo_atual_id" value="{{ r.id }}">
                 <select name="novo_rolo_id" required>
