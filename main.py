@@ -570,12 +570,12 @@ def iniciar_pilagem(request: Request, rolo_id: int = Form(...), senha: str = For
 
     df_users = carregar_usuarios()
     if df_users.loc[(df_users["usuario"] == usuario) & (df_users["senha"].astype(str) == str(senha))].empty:
-        return HTMLResponse("Senha invalida", status_code=403)
+        return RedirectResponse(f"/pilagem?erro=senha", status_code=303)
 
     pilagem_data = carregar_pilagem()
     carga = next((p for p in pilagem_data if p.get("rolo_origem") == rolo_id), None)
     if not carga:
-        return HTMLResponse("Carga nao encontrada", status_code=404)
+        return RedirectResponse("/pilagem?erro=carga", status_code=303)
 
     carga["sacas_piladas"] = safe_float(carga.get("sacas_piladas"))
     carga["peso_pilado"] = safe_float(carga.get("peso_pilado"))
@@ -645,12 +645,12 @@ def finalizar_pilagem(
 
     df_users = carregar_usuarios()
     if df_users.loc[(df_users["usuario"] == usuario) & (df_users["senha"].astype(str) == str(senha))].empty:
-        return HTMLResponse("Senha invalida", status_code=403)
+        return RedirectResponse(f"/pilagem/continuar/{rolo_id}?erro=senha", status_code=303)
 
     pilagem_data = carregar_pilagem()
     carga = next((p for p in pilagem_data if p.get("rolo_origem") == rolo_id), None)
     if not carga:
-        return HTMLResponse("Carga nao encontrada", status_code=404)
+        return RedirectResponse("/pilagem?erro=carga", status_code=303)
 
     carga["status_pilagem"] = "FINALIZADO"
     carga["fim_pilagem"] = datetime.now().strftime("%d/%m/%Y %H:%M")

@@ -228,32 +228,10 @@
         document.getElementById('inputTotalPeso').value = totalPeso.toFixed(2);
         document.getElementById('inputTotalSacas').value = totalSacas.toFixed(2);
 
+        // Mostra overlay e envia o formulario
         const overlay = document.getElementById("resumoOverlay");
-        const conteudo = document.getElementById("resumoConteudo");
-
         overlay.style.display = "flex";
-
-        const pesoBruto = "{{ peso }}";
-        const iniciadoPor = "{{ pilagem_iniciada_por or '—' }}";
-        const usuarioLogado = "{{ request.cookies.get('usuario') }}";
-
-        setTimeout(() => {
-            conteudo.style.display = "block";
-            conteudo.innerHTML = `
-                <strong>📦 Resumo da Carga</strong><br><br>
-
-                Peso Bruto: <strong>${pesoBruto} kg</strong><br>
-                Peso Pós Pilagem: <strong>${totalPeso.toFixed(2)} kg</strong><br><br>
-
-                Iniciado por: <strong>${iniciadoPor}</strong><br>
-                Finalizado por: <strong>${usuarioLogado}</strong>
-            `;
-        }, 1800);
-
-        setTimeout(() => {
-            document.getElementById('finalizarForm').submit();
-        }, 4500);
-
+        document.getElementById('finalizarForm').submit();
         return false;
     }
 </script>
